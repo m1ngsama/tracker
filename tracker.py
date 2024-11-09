@@ -36,6 +36,16 @@ class SystemTracker:
             'percent': disk.percent
         }
 
+    def get_network_stats(self):
+        """Get network I/O statistics"""
+        net = psutil.net_io_counters()
+        return {
+            'bytes_sent': net.bytes_sent,
+            'bytes_recv': net.bytes_recv,
+            'packets_sent': net.packets_sent,
+            'packets_recv': net.packets_recv
+        }
+
     def display_stats(self):
         """Display all system statistics"""
         print(f"\n{'='*50}")
@@ -49,6 +59,9 @@ class SystemTracker:
 
         disk = self.get_disk_usage()
         print(f"Disk: {disk['percent']}% ({disk['used'] / (1024**3):.2f}GB / {disk['total'] / (1024**3):.2f}GB)")
+
+        net = self.get_network_stats()
+        print(f"Network: Sent {net['bytes_sent'] / (1024**2):.2f}MB | Recv {net['bytes_recv'] / (1024**2):.2f}MB")
 
 
 if __name__ == "__main__":
