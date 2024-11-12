@@ -6,11 +6,13 @@ System Tracker - Monitor machine health and performance
 import psutil
 import time
 from datetime import datetime
+from process_monitor import ProcessMonitor
 
 
 class SystemTracker:
     def __init__(self):
         self.start_time = time.time()
+        self.process_monitor = ProcessMonitor()
 
     def get_cpu_usage(self):
         """Get current CPU usage percentage"""
@@ -62,6 +64,8 @@ class SystemTracker:
 
         net = self.get_network_stats()
         print(f"Network: Sent {net['bytes_sent'] / (1024**2):.2f}MB | Recv {net['bytes_recv'] / (1024**2):.2f}MB")
+
+        self.process_monitor.display_processes()
 
 
 if __name__ == "__main__":
