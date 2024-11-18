@@ -4,13 +4,13 @@ A comprehensive system monitoring tool for tracking various machine health metri
 
 ## Features
 
-- CPU usage monitoring
-- Memory utilization tracking
-- Disk I/O statistics
-- Network traffic analysis
-- Process monitoring
-- Temperature sensors
-- System uptime tracking
+- **CPU Monitoring**: Real-time CPU usage percentage tracking
+- **Memory Utilization**: Track memory usage with detailed statistics
+- **Disk I/O Statistics**: Monitor disk usage and I/O operations
+- **Network Traffic Analysis**: Track network bytes sent/received
+- **Process Monitoring**: View top processes by CPU usage
+- **Temperature Sensors**: Monitor system temperatures (if available)
+- **System Uptime Tracking**: Track how long the system has been running
 
 ## Installation
 
@@ -29,3 +29,7 @@ python tracker.py
 - Python 3.8+
 - psutil
 - GPUtil (for GPU monitoring)
+
+## License
+
+MIT License
