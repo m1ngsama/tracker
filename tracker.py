@@ -16,7 +16,7 @@ class SystemTracker:
 
     def get_cpu_usage(self):
         """Get current CPU usage percentage"""
-        return psutil.cpu_percent(interval=1)
+        return psutil.cpu_percent(interval=1, percpu=False)
 
     def get_memory_info(self):
         """Get memory usage statistics"""
