@@ -29,6 +29,8 @@ class ProcessMonitor:
         print("-" * 60)
 
         for proc in self.get_top_processes():
-            print(f"{proc['pid']:<10}{proc['name']:<30}{proc['cpu_percent']:<10.2f}{proc['memory_percent']:<10.2f}")
+            cpu = proc['cpu_percent'] if proc['cpu_percent'] is not None else 0
+            mem = proc['memory_percent'] if proc['memory_percent'] is not None else 0
+            print(f"{proc['pid']:<10}{proc['name']:<30}{cpu:<10.2f}{mem:<10.2f}")
 
         print(f"\nTotal Processes: {self.get_process_count()}")
