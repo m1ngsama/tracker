@@ -5,6 +5,7 @@ System Tracker - Monitor machine health and performance
 
 import psutil
 import time
+import argparse
 from datetime import datetime
 from process_monitor import ProcessMonitor
 
@@ -69,5 +70,19 @@ class SystemTracker:
 
 
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description='System Tracker - Monitor machine health')
+    parser.add_argument('-c', '--continuous', action='store_true', help='Run continuously')
+    parser.add_argument('-i', '--interval', type=int, default=5, help='Update interval in seconds')
+    args = parser.parse_args()
+
     tracker = SystemTracker()
-    tracker.display_stats()
+
+    if args.continuous:
+        try:
+            while True:
+                tracker.display_stats()
+                time.sleep(args.interval)
+        except KeyboardInterrupt:
+            print("\n\nTracker stopped by user")
+    else:
+        tracker.display_stats()
