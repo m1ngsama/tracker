@@ -20,9 +20,19 @@ pip install -r requirements.txt
 
 ## Usage
 
+Basic usage:
 ```bash
 python tracker.py
 ```
+
+Continuous monitoring mode:
+```bash
+python tracker.py --continuous --interval 5
+```
+
+Command line options:
+- `-c, --continuous`: Run in continuous monitoring mode
+- `-i, --interval`: Set update interval in seconds (default: 5)
 
 ## Requirements
 
