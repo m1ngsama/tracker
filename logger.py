@@ -22,16 +22,25 @@ class TrackerLogger:
             f"tracker_{datetime.now().strftime('%Y%m%d')}.log"
         )
 
-        logging.basicConfig(
-            level=logging.INFO,
-            format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-            handlers=[
-                logging.FileHandler(log_file),
-                logging.StreamHandler()
-            ]
-        )
+        # Clear any existing handlers to prevent duplicate logging
+        logger = logging.getLogger('SystemTracker')
+        logger.handlers.clear()
 
-        self.logger = logging.getLogger('SystemTracker')
+        # Create handlers
+        file_handler = logging.FileHandler(log_file)
+        stream_handler = logging.StreamHandler()
+
+        # Create formatter and add it to handlers
+        formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+        file_handler.setFormatter(formatter)
+        stream_handler.setFormatter(formatter)
+
+        # Add handlers to logger
+        logger.addHandler(file_handler)
+        logger.addHandler(stream_handler)
+        logger.setLevel(logging.INFO)
+
+        self.logger = logger
 
     def log_stats(self, stats_type, stats_data):
         """Log system statistics"""
