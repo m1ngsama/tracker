@@ -1,4 +1,4 @@
-from setuptools import setup, find_packages
+from setuptools import setup
 
 with open("README.md", "r", encoding="utf-8") as fh:
     long_description = fh.read()
@@ -15,7 +15,15 @@ setup(
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/m1ngsama/tracker",
-    packages=find_packages(),
+    py_modules=[
+        "tracker",
+        "process_monitor",
+        "temperature_monitor",
+        "config_manager",
+        "alert_system",
+        "logger",
+        "data_exporter",
+    ],
     classifiers=[
         "Development Status :: 4 - Beta",
         "Intended Audience :: Developers",
@@ -41,7 +49,7 @@ setup(
         ],
     },
     include_package_data=True,
-    package_data={
-        "": ["config.json"],
-    },
+    data_files=[
+        ("", ["config.json"]),
+    ],
 )

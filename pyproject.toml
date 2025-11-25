@@ -1,5 +1,5 @@
 [build-system]
-requires = ["setuptools>=45", "wheel", "setuptools_scm[toml]>=6.2"]
+requires = ["setuptools>=45", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
@@ -41,4 +41,4 @@ Issues = "https://github.com/m1ngsama/tracker/issues"
 tracker = "tracker:main"
 
 [tool.setuptools]
-packages = ["tracker"]
+py-modules = ["tracker", "process_monitor", "temperature_monitor", "config_manager", "alert_system", "logger", "data_exporter"]
