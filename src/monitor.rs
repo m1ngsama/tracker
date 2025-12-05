@@ -1,5 +1,6 @@
 use crate::config::Config;
 use crate::process::ProcessMonitor;
+use crate::alert::AlertSystem;
 use crate::logger::TrackerLogger;
 use sysinfo::{System, Disks, Networks};
 use chrono::Local;
@@ -10,17 +11,19 @@ pub struct SystemMonitor {
     disks: Disks,
     networks: Networks,
     process_monitor: ProcessMonitor,
+    alert_system: AlertSystem,
     logger: TrackerLogger,
 }
 
 impl SystemMonitor {
     pub fn new(config: Config) -> Self {
         SystemMonitor {
-            config,
+            config: config.clone(),
             sys: System::new_all(),
             disks: Disks::new_with_refreshed_list(),
             networks: Networks::new_with_refreshed_list(),
             process_monitor: ProcessMonitor::new(),
+            alert_system: AlertSystem::new(config),
             logger: TrackerLogger::default(),
         }
     }
@@ -109,6 +112,7 @@ impl SystemMonitor {
             let cpu_usage = self.get_cpu_usage();
             println!("CPU Usage: {:.2}%", cpu_usage);
             self.logger.log_stats("CPU", &format!("{:.2}%", cpu_usage));
+            self.alert_system.check_cpu_alert(cpu_usage);
         }
 
         if self.config.display.show_memory {
@@ -119,6 +123,7 @@ impl SystemMonitor {
                 mem.total as f64 / (1024_f64.powi(3))
             );
             self.logger.log_stats("Memory", &format!("{:.2}%", mem.percent));
+            self.alert_system.check_memory_alert(mem.percent);
         }
 
         if self.config.display.show_disk {
@@ -129,6 +134,7 @@ impl SystemMonitor {
                 disk.total as f64 / (1024_f64.powi(3))
             );
             self.logger.log_stats("Disk", &format!("{:.2}%", disk.percent));
+            self.alert_system.check_disk_alert(disk.percent);
         }
 
         if self.config.display.show_network {
