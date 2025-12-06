@@ -1,5 +1,6 @@
 use crate::config::Config;
 use crate::process::ProcessMonitor;
+use crate::temperature::TemperatureMonitor;
 use crate::alert::AlertSystem;
 use crate::logger::TrackerLogger;
 use sysinfo::{System, Disks, Networks};
@@ -11,6 +12,7 @@ pub struct SystemMonitor {
     disks: Disks,
     networks: Networks,
     process_monitor: ProcessMonitor,
+    temperature_monitor: TemperatureMonitor,
     alert_system: AlertSystem,
     logger: TrackerLogger,
 }
@@ -23,6 +25,7 @@ impl SystemMonitor {
             disks: Disks::new_with_refreshed_list(),
             networks: Networks::new_with_refreshed_list(),
             process_monitor: ProcessMonitor::new(),
+            temperature_monitor: TemperatureMonitor::new(),
             alert_system: AlertSystem::new(config),
             logger: TrackerLogger::default(),
         }
@@ -148,6 +151,10 @@ impl SystemMonitor {
 
         if self.config.display.show_processes {
             self.process_monitor.display_processes(self.config.process_limit);
+        }
+
+        if self.config.display.show_temperatures {
+            self.temperature_monitor.display_temperatures();
         }
     }
 }
