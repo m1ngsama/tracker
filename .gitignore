@@ -1,3 +1,9 @@
+# Rust
+/target
+Cargo.lock
+**/*.rs.bk
+
+# Python
 __pycache__/
 *.py[cod]
 *$py.class
@@ -18,11 +24,24 @@ wheels/
 *.egg-info/
 .installed.cfg
 *.egg
-.env
-.venv
-env/
 venv/
-.DS_Store
+ENV/
+env/
+
+# Logs
 logs/
 *.log
+
+# Export data
 exports/
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
