@@ -1,4 +1,5 @@
 use sysinfo::System;
+use crossterm::style::Stylize;
 
 pub struct ProcessMonitor {
     sys: System,
@@ -52,16 +53,37 @@ impl ProcessMonitor {
     }
 
     pub fn display_processes(&mut self, limit: usize) {
-        println!("\nTop Processes by CPU Usage:");
-        println!("{:<10}{:<30}{:<10}{:<10}", "PID", "Name", "CPU%", "Memory%");
-        println!("{}", "-".repeat(60));
+        println!("{:<10}{:<30}{:<10}{:<10}", 
+            "PID".bold(), "Name".bold(), "CPU%".bold(), "Memory%".bold());
+        println!("{}", "-".repeat(60).blue());
 
         for proc in self.get_top_processes(limit) {
-            println!("{:<10}{:<30}{:<10.2}{:<10.2}", 
-                proc.pid, proc.name, proc.cpu_percent, proc.memory_percent);
+            let cpu = format!("{:.2}", proc.cpu_percent);
+            let mem = format!("{:.2}", proc.memory_percent);
+            
+            let cpu_colored = if proc.cpu_percent > 50.0 {
+                cpu.red()
+            } else if proc.cpu_percent > 20.0 {
+                cpu.yellow()
+            } else {
+                cpu.green()
+            };
+
+            let name = if proc.name.len() > 28 {
+                format!("{}...", &proc.name[..25])
+            } else {
+                proc.name.clone()
+            };
+
+            println!("{:<10}{:<30}{:<10}{:<10}", 
+                proc.pid, 
+                name, 
+                cpu_colored, 
+                mem
+            );
         }
 
-        println!("\nTotal Processes: {}", self.get_process_count());
+        println!("\nTotal Processes: {}", self.get_process_count().to_string().cyan());
     }
 }
 

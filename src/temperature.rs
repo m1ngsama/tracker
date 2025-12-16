@@ -1,3 +1,5 @@
+use crossterm::style::Stylize;
+
 pub struct TemperatureMonitor;
 
 impl TemperatureMonitor {
@@ -6,7 +8,7 @@ impl TemperatureMonitor {
     }
 
     pub fn display_temperatures(&mut self) {
-        println!("\nTemperature sensors not available on this system");
+        println!("{}", "Temperature sensors not available on this system".yellow());
     }
 }
 

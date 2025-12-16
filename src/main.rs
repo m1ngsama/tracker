@@ -1,6 +1,12 @@
 use clap::Parser;
 use std::thread;
 use std::time::Duration;
+use crossterm::{
+    execute,
+    terminal::{Clear, ClearType},
+    cursor::MoveTo,
+};
+use std::io::stdout;
 
 mod config;
 mod monitor;
@@ -44,6 +50,7 @@ fn main() {
     if args.continuous {
         log::info!("Starting continuous monitoring mode with {}s interval", args.interval);
         loop {
+            execute!(stdout(), Clear(ClearType::All), MoveTo(0, 0)).unwrap();
             monitor.display_stats();
             thread::sleep(Duration::from_secs(args.interval));
         }

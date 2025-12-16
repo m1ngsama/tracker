@@ -5,6 +5,7 @@ use crate::alert::AlertSystem;
 use crate::logger::TrackerLogger;
 use sysinfo::{System, Disks, Networks};
 use chrono::Local;
+use crossterm::style::Stylize;
 
 pub struct SystemMonitor {
     config: Config,
@@ -28,6 +29,23 @@ impl SystemMonitor {
             temperature_monitor: TemperatureMonitor::new(),
             alert_system: AlertSystem::new(config),
             logger: TrackerLogger::default(),
+        }
+    }
+
+    fn draw_bar(&self, percent: f32) -> String {
+        let width = 20;
+        let filled = ((percent / 100.0) * width as f32).round() as usize;
+        let filled = filled.min(width); // Ensure we don't exceed width
+        let empty = width.saturating_sub(filled);
+        
+        let bar_str = format!("[{}{}]", "|".repeat(filled), " ".repeat(empty));
+        
+        if percent >= 90.0 {
+            bar_str.red().to_string()
+        } else if percent >= 75.0 {
+            bar_str.yellow().to_string()
+        } else {
+            bar_str.green().to_string()
         }
     }
 
@@ -105,20 +123,24 @@ impl SystemMonitor {
     }
 
     pub fn display_stats(&mut self) {
-        println!("\n{}", "=".repeat(50));
-        println!("System Tracker - {}", Local::now().format("%Y-%m-%d %H:%M:%S"));
-        println!("{}\n", "=".repeat(50));
+        println!("\n{}", "=".repeat(50).blue());
+        println!("System Tracker - {}", Local::now().format("%Y-%m-%d %H:%M:%S").to_string().cyan().bold());
+        println!("{}\n", "=".repeat(50).blue());
 
         if self.config.display.show_cpu {
             let cpu_usage = self.get_cpu_usage();
-            println!("CPU Usage: {:.2}%", cpu_usage);
+            let bar = self.draw_bar(cpu_usage);
+            println!("{:<15} {} {:.2}%", "CPU Usage:".bold(), bar, cpu_usage);
             self.logger.log_stats("CPU", &format!("{:.2}%", cpu_usage));
             self.alert_system.check_cpu_alert(cpu_usage);
         }
 
         if self.config.display.show_memory {
             let mem = self.get_memory_info();
-            println!("Memory: {:.2}% ({:.2}GB / {:.2}GB)", 
+            let bar = self.draw_bar(mem.percent);
+            println!("{:<15} {} {:.2}% ({:.2}GB / {:.2}GB)", 
+                "Memory:".bold(),
+                bar,
                 mem.percent,
                 mem.used as f64 / (1024_f64.powi(3)),
                 mem.total as f64 / (1024_f64.powi(3))
@@ -129,7 +151,10 @@ impl SystemMonitor {
 
         if self.config.display.show_disk {
             let disk = self.get_disk_usage();
-            println!("Disk: {:.2}% ({:.2}GB / {:.2}GB)", 
+            let bar = self.draw_bar(disk.percent);
+            println!("{:<15} {} {:.2}% ({:.2}GB / {:.2}GB)", 
+                "Disk:".bold(),
+                bar,
                 disk.percent,
                 disk.used as f64 / (1024_f64.powi(3)),
                 disk.total as f64 / (1024_f64.powi(3))
@@ -140,18 +165,21 @@ impl SystemMonitor {
 
         if self.config.display.show_network {
             let net = self.get_network_stats();
-            println!("Network: Sent {:.2}MB | Recv {:.2}MB", 
-                net.bytes_sent as f64 / (1024_f64.powi(2)),
-                net.bytes_recv as f64 / (1024_f64.powi(2))
+            println!("{:<15} Sent {} | Recv {}", 
+                "Network:".bold(),
+                format!("{:.2}MB", net.bytes_sent as f64 / (1024_f64.powi(2))).green(),
+                format!("{:.2}MB", net.bytes_recv as f64 / (1024_f64.powi(2))).green()
             );
             self.logger.log_stats("Network", &format!("Sent: {} Recv: {}", net.bytes_sent, net.bytes_recv));
         }
 
         if self.config.display.show_processes {
+            println!("\n{}", "Top Processes:".bold().underlined());
             self.process_monitor.display_processes(self.config.process_limit);
         }
 
         if self.config.display.show_temperatures {
+            println!("\n{}", "Temperatures:".bold().underlined());
             self.temperature_monitor.display_temperatures();
         }
     }
