@@ -33,8 +33,6 @@ impl SystemMonitor {
 
     pub fn get_cpu_usage(&mut self) -> f32 {
         self.sys.refresh_cpu_all();
-        std::thread::sleep(std::time::Duration::from_millis(200));
-        self.sys.refresh_cpu_all();
         self.sys.global_cpu_usage()
     }
 
@@ -163,6 +161,7 @@ impl SystemMonitor {
 pub struct MemoryInfo {
     pub total: u64,
     pub used: u64,
+    #[allow(dead_code)]
     pub available: u64,
     pub percent: f32,
 }
@@ -171,6 +170,7 @@ pub struct MemoryInfo {
 pub struct DiskInfo {
     pub total: u64,
     pub used: u64,
+    #[allow(dead_code)]
     pub free: u64,
     pub percent: f32,
 }
@@ -179,6 +179,8 @@ pub struct DiskInfo {
 pub struct NetworkStats {
     pub bytes_sent: u64,
     pub bytes_recv: u64,
+    #[allow(dead_code)]
     pub packets_sent: u64,
+    #[allow(dead_code)]
     pub packets_recv: u64,
 }

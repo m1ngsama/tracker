@@ -8,6 +8,7 @@ pub struct AlertSystem {
 }
 
 #[derive(Debug, Clone)]
+#[allow(dead_code)]
 pub struct Alert {
     pub alert_type: String,
     pub message: String,
@@ -62,6 +63,7 @@ impl AlertSystem {
         println!("\n⚠️  ALERT: {}", message);
     }
 
+    #[allow(dead_code)]
     pub fn get_alert_history(&self) -> &[Alert] {
         &self.alert_history
     }

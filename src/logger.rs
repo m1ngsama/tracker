@@ -44,6 +44,7 @@ impl TrackerLogger {
         self.write_log("WARNING", &alert_message);
     }
 
+    #[allow(dead_code)]
     pub fn log_error(&self, error_message: &str) {
         let error_msg = format!("ERROR: {}", error_message);
         self.write_log("ERROR", &error_msg);
