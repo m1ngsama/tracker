@@ -43,11 +43,6 @@ impl TrackerLogger {
         let alert_message = format!("ALERT: {}", message);
         self.write_log("WARNING", &alert_message);
     }
-
-    pub fn log_error(&self, error_message: &str) {
-        let error_msg = format!("ERROR: {}", error_message);
-        self.write_log("ERROR", &error_msg);
-    }
 }
 
 impl Default for TrackerLogger {

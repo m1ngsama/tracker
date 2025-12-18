@@ -42,7 +42,6 @@ impl SystemMonitor {
         self.sys.refresh_memory();
         let total = self.sys.total_memory();
         let used = self.sys.used_memory();
-        let available = self.sys.available_memory();
         let percent = if total > 0 {
             (used as f32 / total as f32) * 100.0
         } else {
@@ -52,7 +51,6 @@ impl SystemMonitor {
         MemoryInfo {
             total,
             used,
-            available,
             percent,
         }
     }
@@ -78,7 +76,6 @@ impl SystemMonitor {
         DiskInfo {
             total,
             used,
-            free: available,
             percent,
         }
     }
@@ -88,21 +85,15 @@ impl SystemMonitor {
         
         let mut bytes_sent = 0;
         let mut bytes_recv = 0;
-        let mut packets_sent = 0;
-        let mut packets_recv = 0;
         
         for (_, network) in &self.networks {
             bytes_sent += network.total_transmitted();
             bytes_recv += network.total_received();
-            packets_sent += network.total_packets_transmitted();
-            packets_recv += network.total_packets_received();
         }
 
         NetworkStats {
             bytes_sent,
             bytes_recv,
-            packets_sent,
-            packets_recv,
         }
     }
 
@@ -163,7 +154,6 @@ impl SystemMonitor {
 pub struct MemoryInfo {
     pub total: u64,
     pub used: u64,
-    pub available: u64,
     pub percent: f32,
 }
 
@@ -171,7 +161,6 @@ pub struct MemoryInfo {
 pub struct DiskInfo {
     pub total: u64,
     pub used: u64,
-    pub free: u64,
     pub percent: f32,
 }
 
@@ -179,6 +168,4 @@ pub struct DiskInfo {
 pub struct NetworkStats {
     pub bytes_sent: u64,
     pub bytes_recv: u64,
-    pub packets_sent: u64,
-    pub packets_recv: u64,
 }

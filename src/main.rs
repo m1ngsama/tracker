@@ -8,7 +8,6 @@ mod process;
 mod temperature;
 mod alert;
 mod logger;
-mod exporter;
 
 use config::Config;
 use monitor::SystemMonitor;

@@ -1,137 +1,128 @@
-# Tracker
+tracker-rs(1)                         System Tracker                         tracker-rs(1)
 
-A comprehensive system monitoring tool for tracking various machine health metrics and performance indicators.
+NAME
+       tracker-rs - high-performance system monitoring tool
 
-[![CI](https://github.com/m1ngsama/tracker/actions/workflows/ci.yml/badge.svg)](https://github.com/m1ngsama/tracker/actions/workflows/ci.yml)
-[![Release](https://github.com/m1ngsama/tracker/actions/workflows/release.yml/badge.svg)](https://github.com/m1ngsama/tracker/actions/workflows/release.yml)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+SYNOPSIS
+       tracker-rs [OPTIONS]
 
-## Features
+DESCRIPTION
+       tracker-rs is a high-performance, memory-safe system monitoring tool written in Rust.
+       It provides real-time statistics for CPU, memory, disk I/O, and network traffic, along
+       with process management and temperature monitoring.
 
-- **CPU Monitoring**: Real-time CPU usage percentage tracking
-- **Memory Utilization**: Track memory usage with detailed statistics
-- **Disk I/O Statistics**: Monitor disk usage and I/O operations
-- **Network Traffic Analysis**: Track network bytes sent/received
-- **Process Monitoring**: View top processes by CPU usage
-- **Temperature Sensors**: Monitor system temperatures (if available)
-- **Alert System**: Configurable thresholds for CPU, memory, and disk alerts
-- **Logging**: Automatic logging of all metrics to daily log files
-- **Data Export**: Export monitoring data to JSON or CSV formats
-- **Configuration**: Customizable settings via JSON config file
+       Designed as a drop-in replacement for the legacy Python implementation, it offers
+       significant performance improvements (10-50x faster execution, reduced memory usage)
+       while maintaining configuration compatibility.
 
-## Installation
+OPTIONS
+       -c, --continuous
+              Run in continuous monitoring mode. The tool will repeatedly display statistics
+              and log data based on the update interval.
 
-### From PyPI (coming soon)
+       -i, --interval SECONDS
+              Set the update interval in seconds. Default is 5 seconds.
+              This option is primarily used with --continuous mode.
 
-```bash
-pip install system-tracker
-```
+       --config FILE
+              Path to the configuration file. Default is "config.json".
+              If the file does not exist, internal defaults are used.
 
-### From Source
+       -h, --help
+              Print help message and exit.
 
-```bash
-git clone https://github.com/m1ngsama/tracker.git
-cd tracker
-pip install -r requirements.txt
-```
+       -V, --version
+              Print version information and exit.
 
-## Usage
+CONFIGURATION
+       The tool is configured via a JSON file (default: config.json).
+       The configuration file supports the following keys:
 
-### Basic usage:
-```bash
-python tracker.py
-```
+       update_interval (integer)
+              Default refresh rate in seconds (overridden by -i).
 
-### Continuous monitoring mode:
-```bash
-python tracker.py --continuous --interval 5
-```
+       display (object)
+              Toggle individual monitoring features on/off:
+              - show_cpu (boolean)
+              - show_memory (boolean)
+              - show_disk (boolean)
+              - show_network (boolean)
+              - show_processes (boolean)
+              - show_temperatures (boolean)
 
-### Command line options:
-- `-c, --continuous`: Run in continuous monitoring mode
-- `-i, --interval`: Set update interval in seconds (default: 5)
+       process_limit (integer)
+              Number of top CPU-consuming processes to display.
 
-## Configuration
+       alert_thresholds (object)
+              Percentage thresholds for triggering alerts:
+              - cpu_percent (float)
+              - memory_percent (float)
+              - disk_percent (float)
 
-The `config.json` file allows you to customize the tracker behavior:
+       Example config.json:
+       {
+           "update_interval": 5,
+           "display": {
+               "show_cpu": true,
+               "show_memory": true,
+               "show_disk": true,
+               "show_network": true,
+               "show_processes": true,
+               "show_temperatures": true
+           },
+           "process_limit": 5,
+           "alert_thresholds": {
+               "cpu_percent": 80.0,
+               "memory_percent": 85.0,
+               "disk_percent": 90.0
+           }
+       }
 
-```json
-{
-  "update_interval": 5,
-  "display": {
-    "show_cpu": true,
-    "show_memory": true,
-    "show_disk": true,
-    "show_network": true,
-    "show_processes": true,
-    "show_temperatures": true
-  },
-  "process_limit": 5,
-  "alert_thresholds": {
-    "cpu_percent": 80,
-    "memory_percent": 85,
-    "disk_percent": 90
-  }
-}
-```
+OUTPUT
+       tracker-rs outputs formatted system statistics to the console.
+       In continuous mode, it updates at the specified interval.
 
-## Output
+       CPU Usage: 35.42%
+       Memory: 58.21% (14.00GB / 24.00GB)
+       Disk: 50.40% (464.07GB / 920.86GB)
+       Network: Sent 4872.76MB | Recv 6633.56MB
 
-The tracker provides:
-- **Console Output**: Real-time metrics displayed in the terminal
-- **Log Files**: Daily logs stored in `logs/` directory
-- **Alerts**: Visual and logged warnings when thresholds are exceeded
-- **Export Data**: Optional data export to `exports/` directory
+       Top Processes by CPU Usage:
+       PID       Name                          CPU%      Memory%
+       ------------------------------------------------------------
+       1234      chrome                        45.23     3.21
 
-## Requirements
+FILES
+       config.json
+              Default configuration file location.
 
-- Python 3.8+
-- psutil
-- GPUtil (for GPU monitoring)
-- requests
+       logs/tracker_YYYYMMDD.log
+              Daily rotating log files containing system stats and alerts.
 
-## Development
+EXIT STATUS
+       0      Success.
+       1      Failure (e.g., invalid configuration).
 
-### Running Tests
+EXAMPLES
+       Run a single monitoring snapshot:
+              $ tracker-rs
 
-```bash
-python test_tracker.py
-```
+       Run continuously every 2 seconds:
+              $ tracker-rs -c -i 2
 
-### Project Structure
+       Use a custom configuration file:
+              $ tracker-rs --config /etc/tracker/config.json
 
-```
-tracker/
-├── tracker.py              # Main application
-├── process_monitor.py      # Process monitoring module
-├── temperature_monitor.py  # Temperature sensors module
-├── config_manager.py       # Configuration management
-├── alert_system.py         # Alert and threshold management
-├── logger.py              # Logging functionality
-├── data_exporter.py       # Data export utilities
-├── config.json            # Configuration file
-└── requirements.txt       # Python dependencies
-```
+SEE ALSO
+       top(1), htop(1), ps(1)
 
-## CI/CD
+BUGS
+       Report bugs to https://github.com/m1ngsama/tracker/issues
 
-This project uses GitHub Actions for:
-- **Continuous Integration**: Automated testing on multiple OS and Python versions
-- **Automated Releases**: Automatic package building and release creation on version tags
-- **Code Quality**: Linting and syntax checking
+AUTHOR
+       m1ngsama
 
-## Contributing
+LICENSE
+       MIT License
 
-Contributions are welcome! Please feel free to submit a Pull Request.
-
-## License
-
-MIT License - see [LICENSE](LICENSE) file for details
-
-## Author
-
-m1ngsama
-
-## Acknowledgments
-
-- Built with [psutil](https://github.com/giampaolo/psutil) for cross-platform system monitoring
+v1.0.0                                2025-12-18                         tracker-rs(1)

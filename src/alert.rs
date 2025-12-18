@@ -4,13 +4,6 @@ use crate::logger::TrackerLogger;
 pub struct AlertSystem {
     config: Config,
     logger: TrackerLogger,
-    alert_history: Vec<Alert>,
-}
-
-#[derive(Debug, Clone)]
-pub struct Alert {
-    pub alert_type: String,
-    pub message: String,
 }
 
 impl AlertSystem {
@@ -18,7 +11,6 @@ impl AlertSystem {
         AlertSystem {
             config,
             logger: TrackerLogger::default(),
-            alert_history: Vec::new(),
         }
     }
 
@@ -53,16 +45,7 @@ impl AlertSystem {
     }
 
     fn trigger_alert(&mut self, alert_type: &str, message: &str) {
-        let alert = Alert {
-            alert_type: alert_type.to_string(),
-            message: message.to_string(),
-        };
-        self.alert_history.push(alert.clone());
         self.logger.log_alert(&format!("{}: {}", alert_type, message));
         println!("\n⚠️  ALERT: {}", message);
-    }
-
-    pub fn get_alert_history(&self) -> &[Alert] {
-        &self.alert_history
     }
 }
