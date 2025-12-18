@@ -21,8 +21,10 @@ impl ProcessMonitor {
 
     pub fn get_top_processes(&mut self, limit: usize) -> Vec<ProcessInfo> {
         self.sys.refresh_all();
-        
-        let mut processes: Vec<ProcessInfo> = self.sys.processes()
+
+        let mut processes: Vec<ProcessInfo> = self
+            .sys
+            .processes()
             .iter()
             .map(|(pid, process)| {
                 let total_memory = self.sys.total_memory() as f32;
@@ -57,8 +59,10 @@ impl ProcessMonitor {
         println!("{}", "-".repeat(60));
 
         for proc in self.get_top_processes(limit) {
-            println!("{:<10}{:<30}{:<10.2}{:<10.2}", 
-                proc.pid, proc.name, proc.cpu_percent, proc.memory_percent);
+            println!(
+                "{:<10}{:<30}{:<10.2}{:<10.2}",
+                proc.pid, proc.name, proc.cpu_percent, proc.memory_percent
+            );
         }
 
         println!("\nTotal Processes: {}", self.get_process_count());

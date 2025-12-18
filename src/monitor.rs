@@ -1,10 +1,10 @@
+use crate::alert::AlertSystem;
 use crate::config::Config;
+use crate::logger::TrackerLogger;
 use crate::process::ProcessMonitor;
 use crate::temperature::TemperatureMonitor;
-use crate::alert::AlertSystem;
-use crate::logger::TrackerLogger;
-use sysinfo::{System, Disks, Networks};
 use chrono::Local;
+use sysinfo::{Disks, Networks, System};
 
 pub struct SystemMonitor {
     config: Config,
@@ -57,15 +57,15 @@ impl SystemMonitor {
 
     pub fn get_disk_usage(&mut self) -> DiskInfo {
         self.disks.refresh();
-        
+
         let mut total: u64 = 0;
         let mut available: u64 = 0;
-        
+
         for disk in &self.disks {
             total += disk.total_space();
             available += disk.available_space();
         }
-        
+
         let used = total.saturating_sub(available);
         let percent = if total > 0 {
             (used as f32 / total as f32) * 100.0
@@ -82,10 +82,10 @@ impl SystemMonitor {
 
     pub fn get_network_stats(&mut self) -> NetworkStats {
         self.networks.refresh();
-        
+
         let mut bytes_sent = 0;
         let mut bytes_recv = 0;
-        
+
         for (_, network) in &self.networks {
             bytes_sent += network.total_transmitted();
             bytes_recv += network.total_received();
@@ -99,7 +99,10 @@ impl SystemMonitor {
 
     pub fn display_stats(&mut self) {
         println!("\n{}", "=".repeat(50));
-        println!("System Tracker - {}", Local::now().format("%Y-%m-%d %H:%M:%S"));
+        println!(
+            "System Tracker - {}",
+            Local::now().format("%Y-%m-%d %H:%M:%S")
+        );
         println!("{}\n", "=".repeat(50));
 
         if self.config.display.show_cpu {
@@ -111,37 +114,46 @@ impl SystemMonitor {
 
         if self.config.display.show_memory {
             let mem = self.get_memory_info();
-            println!("Memory: {:.2}% ({:.2}GB / {:.2}GB)", 
+            println!(
+                "Memory: {:.2}% ({:.2}GB / {:.2}GB)",
                 mem.percent,
                 mem.used as f64 / (1024_f64.powi(3)),
                 mem.total as f64 / (1024_f64.powi(3))
             );
-            self.logger.log_stats("Memory", &format!("{:.2}%", mem.percent));
+            self.logger
+                .log_stats("Memory", &format!("{:.2}%", mem.percent));
             self.alert_system.check_memory_alert(mem.percent);
         }
 
         if self.config.display.show_disk {
             let disk = self.get_disk_usage();
-            println!("Disk: {:.2}% ({:.2}GB / {:.2}GB)", 
+            println!(
+                "Disk: {:.2}% ({:.2}GB / {:.2}GB)",
                 disk.percent,
                 disk.used as f64 / (1024_f64.powi(3)),
                 disk.total as f64 / (1024_f64.powi(3))
             );
-            self.logger.log_stats("Disk", &format!("{:.2}%", disk.percent));
+            self.logger
+                .log_stats("Disk", &format!("{:.2}%", disk.percent));
             self.alert_system.check_disk_alert(disk.percent);
         }
 
         if self.config.display.show_network {
             let net = self.get_network_stats();
-            println!("Network: Sent {:.2}MB | Recv {:.2}MB", 
+            println!(
+                "Network: Sent {:.2}MB | Recv {:.2}MB",
                 net.bytes_sent as f64 / (1024_f64.powi(2)),
                 net.bytes_recv as f64 / (1024_f64.powi(2))
             );
-            self.logger.log_stats("Network", &format!("Sent: {} Recv: {}", net.bytes_sent, net.bytes_recv));
+            self.logger.log_stats(
+                "Network",
+                &format!("Sent: {} Recv: {}", net.bytes_sent, net.bytes_recv),
+            );
         }
 
         if self.config.display.show_processes {
-            self.process_monitor.display_processes(self.config.process_limit);
+            self.process_monitor
+                .display_processes(self.config.process_limit);
         }
 
         if self.config.display.show_temperatures {

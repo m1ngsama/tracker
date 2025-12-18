@@ -2,12 +2,12 @@ use clap::Parser;
 use std::thread;
 use std::time::Duration;
 
+mod alert;
 mod config;
+mod logger;
 mod monitor;
 mod process;
 mod temperature;
-mod alert;
-mod logger;
 
 use config::Config;
 use monitor::SystemMonitor;
@@ -41,7 +41,10 @@ fn main() {
     let mut monitor = SystemMonitor::new(config);
 
     if args.continuous {
-        log::info!("Starting continuous monitoring mode with {}s interval", args.interval);
+        log::info!(
+            "Starting continuous monitoring mode with {}s interval",
+            args.interval
+        );
         loop {
             monitor.display_stats();
             thread::sleep(Duration::from_secs(args.interval));
