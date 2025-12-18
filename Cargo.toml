@@ -1,6 +1,6 @@
 [package]
 name = "tracker-rs"
-version = "1.0.0"
+version = "1.0.1"
 edition = "2021"
 authors = ["m1ngsama"]
 description = "A comprehensive system monitoring tool"

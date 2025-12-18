@@ -125,4 +125,4 @@ AUTHOR
 LICENSE
        MIT License
 
-v1.0.0                                2025-12-18                         tracker-rs(1)
+v1.0.1                                2025-12-18                         tracker-rs(1)
